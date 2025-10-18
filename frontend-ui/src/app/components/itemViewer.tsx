@@ -32,12 +32,12 @@ export default function ItemViewer() {
   const [images, setImages] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchImages() {
       setLoading(true);
-      setError(null);
+      setError(false);
       try {
         const result = await fetch("https://dog.ceo/api/breed/whippet/images");
         if (!result.ok) throw new Error(`HTTP ${result.status}`);
@@ -47,11 +47,7 @@ export default function ItemViewer() {
         setIndex(0);
       } catch (err: unknown) {
         console.error(err);
-        if (err && typeof err === "object" && "message" in err && typeof (err as { message?: unknown }).message === "string") {
-          setError((err as { message: string }).message);
-        } else {
-          setError("Failed to fetch images");
-        }
+        setError(true);
         setImages([]);
       } finally {
         setLoading(false);

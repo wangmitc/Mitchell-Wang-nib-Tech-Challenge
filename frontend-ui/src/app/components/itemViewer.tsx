@@ -35,6 +35,11 @@ export default function ItemViewer() {
 
   return (
     <div>
+        <h1>Dogs Images</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: Something went wrong</p>}
+        {!loading && !error && images.length === 0 && <p>No images available</p>}
+        {current && <img src={current} alt="Dog" />}
     </div>
   );
 }

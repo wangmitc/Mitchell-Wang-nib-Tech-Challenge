@@ -60,7 +60,7 @@ export default function ItemViewer() {
 
   return (
     <Container>
-        <Title>Dogs Images</Title>
+        <Title>Dog Images</Title>
         {loading && <State>Loading...</State>}
         {error && <State>Error: Something went wrong</State>}
         {!loading && !error && images.length === 0 && <State>No images available</State>}

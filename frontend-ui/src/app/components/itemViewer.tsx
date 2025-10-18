@@ -64,7 +64,12 @@ export default function ItemViewer() {
         {loading && <State>Loading...</State>}
         {error && <State>Error: Something went wrong</State>}
         {!loading && !error && images.length === 0 && <State>No images available</State>}
-        {current && <Image src={current} alt="Dog" />}
+        {current && (
+          <Image
+            src={current}
+            alt={`Whippet dog image ${index + 1} of ${images.length}`}
+          />
+        )}
     </Container>
   );
 }

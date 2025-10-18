@@ -45,9 +45,13 @@ export default function ItemViewer() {
         const arr = Array.isArray(body?.message) ? body.message : [];
         setImages(arr);
         setIndex(0);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        setError(err?.message ?? "Failed to fetch images");
+        if (err && typeof err === "object" && "message" in err && typeof (err as { message?: unknown }).message === "string") {
+          setError((err as { message: string }).message);
+        } else {
+          setError("Failed to fetch images");
+        }
         setImages([]);
       } finally {
         setLoading(false);

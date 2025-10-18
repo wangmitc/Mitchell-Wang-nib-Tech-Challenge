@@ -46,6 +46,7 @@ export default function ItemViewer() {
         setImages(arr);
         setIndex(0);
       } catch (err: unknown) {
+        console.error(err);
         setError(true);
         setImages([]);
       } finally {

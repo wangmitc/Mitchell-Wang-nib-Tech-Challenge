@@ -252,17 +252,68 @@ export default function ItemViewer() {
       cleanup();
     };
 
+    const onPointerCancel = (e: PointerEvent) => {
+      cleanup();
+    };
+
+    const onPointerCancel = (e: PointerEvent) => {
+      cleanup();
+    };
+
     function cleanup() {
       setIsDragging(false);
       setDragIndex(null);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerCancel);
+      window.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("pointercancel", onPointerCancel);
+      window.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("blur", onBlur);
     }
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        cleanup();
+      }
+    };
+
+    const onBlur = () => {
+      cleanup();
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        cleanup();
+      }
+    };
+
+    const onBlur = () => {
+      cleanup();
+    };
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerCancel);
+    window.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("pointercancel", onPointerCancel);
+    window.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("blur", onBlur);
   };
 
+  // Cleanup pointer listeners on unmount
+  React.useEffect(() => {
+    return () => {
+      // Remove any lingering listeners in case drag was in progress
+      window.removeEventListener("pointermove", null as any);
+      window.removeEventListener("pointerup", null as any);
+      window.removeEventListener("pointercancel", null as any);
+      window.removeEventListener("visibilitychange", null as any);
+      window.removeEventListener("blur", null as any);
+    };
+  }, []);
   return (
     <Container>
       <Title>Very Cool Dog Images 🐕</Title>

@@ -23,6 +23,13 @@ const Slide = styled("div")({
   alignItems: "center",
   justifyContent: "center",
   height: "100%",
+  transition: "transform 180ms ease, box-shadow 180ms ease",
+  ":hover": {
+    transform: "translateY(-6px)",
+  },
+  ":focus-within": {
+    transform: "translateY(-6px)",
+  },
 });
 
 const Image = styled("img")({
@@ -32,6 +39,13 @@ const Image = styled("img")({
   display: "block",
   cursor: "pointer",
   borderRadius: 12,
+  transition: "filter 160ms ease, transform 180ms ease",
+  ":hover": {
+    filter: "brightness(0.60)",
+  },
+  ":focus": {
+    filter: "brightness(0.60)",
+  },
 });
 
 type Props = {

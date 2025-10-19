@@ -59,6 +59,8 @@ export default function ItemViewer() {
 
   const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
   const scrollNext = () => emblaApi && emblaApi.scrollNext();
+  const scrollToFirst = () => emblaApi && emblaApi.scrollTo(0);
+  const scrollToLast = () => emblaApi && emblaApi.scrollTo(images.length - 1);
 
   React.useEffect(() => {
     async function fetchImages() {
@@ -104,8 +106,10 @@ export default function ItemViewer() {
           <ViewportCarousel emblaRef={emblaRef} images={images} onImageClick={(src) => setLightboxSrc(src)} />
 
           <ButtonContainer>
+            <Button onClick={scrollToFirst}>Start</Button>
             <Button onClick={scrollPrev}>Previous</Button>
             <Button onClick={scrollNext}>Next</Button>
+            <Button onClick={scrollToLast}>Last</Button>
           </ButtonContainer>
 
           <ProgressSlider

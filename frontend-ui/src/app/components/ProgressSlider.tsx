@@ -77,7 +77,7 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
   };
 
   const commitToIndex = (index: number) => {
-    if (emblaApi && typeof emblaApi.scrollTo === "function") {
+    if (emblaApi) {
       emblaApi.scrollTo(index);
     }
   };
@@ -143,12 +143,12 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
     const key = e.key;
     if (["ArrowLeft", "ArrowRight", "Home", "End", " "].includes(key)) e.preventDefault();
     let target: number | null = null;
-    const idx = selectedIndex ?? 0;
-    if (key === "ArrowLeft") target = Math.max(0, idx - 1);
-    else if (key === "ArrowRight") target = Math.min(imagesLength - 1, idx + 1);
+    const index = selectedIndex ?? 0;
+    if (key === "ArrowLeft") target = Math.max(0, index - 1);
+    else if (key === "ArrowRight") target = Math.min(imagesLength - 1, index + 1);
     else if (key === "Home") target = 0;
     else if (key === "End") target = Math.max(0, imagesLength - 1);
-    else if (key === " ") target = Math.min(imagesLength - 1, idx + 1);
+    else if (key === " ") target = Math.min(imagesLength - 1, index + 1);
     if (target !== null) commitToIndex(target);
   };
 

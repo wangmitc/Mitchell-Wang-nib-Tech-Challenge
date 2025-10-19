@@ -161,7 +161,6 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
     <Container>
       <Bar
         ref={ref}
-        onClick={onClick}
         onPointerDown={startPointer}
         tabIndex={0}
         role="slider"

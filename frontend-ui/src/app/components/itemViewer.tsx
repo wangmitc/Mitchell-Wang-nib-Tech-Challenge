@@ -25,6 +25,7 @@ const Image = styled("img")({
   height: "100%",
   objectFit: "cover",
   display: "block",
+  borderRadius: 12,
 });
 
 const State = styled("div")({
@@ -34,9 +35,8 @@ const State = styled("div")({
 const Viewport = styled("div")({
   overflow: "hidden",
   width: "100%",
-  maxWidth: "60rem",
+  maxWidth: "70rem",
   borderRadius: 12,
-  background: "#f3f3f3",
   maxHeight: "35rem",
 });
 
@@ -46,19 +46,42 @@ const Track = styled("div")({
 });
 
 const Slide = styled("div")({
-  minWidth: "100%",
-  flex: "0 0 100%",
+  flex: "0 0 80%",
+  marginRight: "1rem",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   height: "100%",
 });
 
+const ButtonContainer = styled("div")({
+  marginTop: "1rem",
+  display: "flex",
+  gap: 8,
+});
+
+const Button = styled("button")({
+  padding: "0.5rem 1rem",
+  borderRadius: 8,
+  border: "none",
+  cursor: "pointer",
+  backgroundColor: "white",
+  color: "black",
+  fontWeight: 600,
+  transition: "background-color 0.3s",
+  "&:hover": {
+    backgroundColor: "#f0f0f0",
+  },
+});
+
 export default function ItemViewer() {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [emblaRef] = useEmblaCarousel();
+  const [emblaRef, emblaApi] = useEmblaCarousel();
+
+  const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
+  const scrollNext = () => emblaApi && emblaApi.scrollNext();
 
   useEffect(() => {
     async function fetchImages() {
@@ -97,6 +120,14 @@ export default function ItemViewer() {
           ))}
         </Track>
       </Viewport>
+      <ButtonContainer>
+        <Button onClick={scrollPrev}>
+          Previous
+        </Button>
+        <Button onClick={scrollNext}>
+          Next
+        </Button>
+      </ButtonContainer>
     </Container>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
-import Image from "next/image";
-import ItemViewer from "./components/itemViewer";
+import ItemViewer from "./components/ItemViewer";
 
 export default function Home() {
   return (

@@ -3,6 +3,7 @@
 import React from "react";
 import { styled } from "@mui/system";
 import useEmblaCarousel from "embla-carousel-react";
+import Lightbox from "./Lightbox";
 
 const Container = styled("div")({
   display: "flex",
@@ -103,46 +104,6 @@ const Count = styled("div")({
   fontWeight: 600,
 });
 
-const LightboxOverlay = styled("div")({
-  position: "fixed",
-  inset: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  background: "rgba(0,0,0,0.7)",
-  zIndex: 9999,
-});
-
-const LightboxInner = styled("div")({
-  maxWidth: "90%",
-  maxHeight: "90%",
-  position: "relative",
-});
-
-const LightboxImage = styled("img")({
-  maxWidth: "100%",
-  maxHeight: "100%",
-});
-
-const CloseButton = styled("button")({
-  position: "absolute",
-  top: "-1rem",
-  right: "-1rem",
-  width: "2.5rem",
-  height: "2.5rem",
-  borderRadius: 999,
-  border: "none",
-  background: "white",
-  color: "black",
-  cursor: "pointer",
-  fontSize: "1.25rem",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-  transition: "background-color 0.3s",
-  "&:hover": {
-    background: "#f0f0f0",
-  },
-});
-
 export default function ItemViewer() {
   const [images, setImages] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -151,21 +112,9 @@ export default function ItemViewer() {
   const [dragPercentage, setDragPercentage] = React.useState(0);
   const [dragIndex, setDragIndex] = React.useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', containScroll: 'keepSnaps', dragFree: true, loop: true  });
   const progressRef = React.useRef<HTMLDivElement | null>(null);
-  const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
-  const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
-  const lastActiveElementRef = React.useRef<HTMLElement | null>(null);
-
-  React.useEffect(() => {
-    if (!lightboxSrc) return;
-    // save previously focused element
-    lastActiveElementRef.current = document.activeElement as HTMLElement | null;
-    // focus the close button
-    setTimeout(() => closeButtonRef.current?.focus(), 0);
-    return;
-  }, [lightboxSrc]);
-
 
   const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
   const scrollNext = () => emblaApi && emblaApi.scrollNext();
@@ -361,43 +310,7 @@ export default function ItemViewer() {
                 : "0 / 0"}
             </Count>
           </ProgressContainer>
-          {lightboxSrc && (
-            <LightboxOverlay
-              id="lightbox-overlay"
-              role="dialog"
-              aria-modal="true"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setLightboxSrc(null);
-                  // restore focus
-                  lastActiveElementRef.current?.focus();
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  setLightboxSrc(null);
-                  lastActiveElementRef.current?.focus();
-                }
-                if (e.key === "Tab") {
-                  // trap focus to the close button (simple trap)
-                  e.preventDefault();
-                  closeButtonRef.current?.focus();
-                }
-              }}
-              tabIndex={-1}
-            >
-              <LightboxInner>
-                <CloseButton
-                  ref={closeButtonRef}
-                  aria-label="Close image"
-                  onClick={() => setLightboxSrc(null)}
-                >
-                  ×
-                </CloseButton>
-                <LightboxImage src={lightboxSrc} alt="Enlarged Dog Image" />
-              </LightboxInner>
-            </LightboxOverlay>
-          )}
+          <Lightbox src={lightboxSrc} alt="Enlarged Dog Image" onClose={() => setLightboxSrc(null)} />
         </>
       )}
     </Container>

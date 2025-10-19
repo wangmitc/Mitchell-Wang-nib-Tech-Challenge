@@ -52,7 +52,10 @@ export default function ViewportCarousel({ emblaRef, images, onImageClick }: Pro
               tabIndex={0}
               onClick={() => onImageClick(src)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") onImageClick(src);
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onImageClick(src);
+                }
               }}
             />
           </Slide>

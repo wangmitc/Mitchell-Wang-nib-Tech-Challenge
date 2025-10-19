@@ -25,6 +25,7 @@ const Image = styled("img")({
   height: "100%",
   objectFit: "cover",
   display: "block",
+  cursor: "pointer",
   borderRadius: 12,
 });
 
@@ -102,6 +103,47 @@ const Count = styled("div")({
   fontWeight: 600,
 });
 
+const LightboxOverlay = styled("div")({
+  position: "fixed",
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "rgba(0,0,0,0.7)",
+  zIndex: 9999,
+});
+
+const LightboxInner = styled("div")({
+  maxWidth: "90%",
+  maxHeight: "90%",
+  position: "relative",
+});
+
+const LightboxImage = styled("img")({
+  maxWidth: "100%",
+  maxHeight: "100%",
+});
+
+const CloseButton = styled("button")({
+  position: "absolute",
+  top: "-1rem",
+  right: "-1rem",
+  width: "2.5rem",
+  height: "2.5rem",
+  borderRadius: 999,
+  border: "none",
+  background: "white",
+  color: "black",
+  cursor: "pointer",
+  fontSize: "1.25rem",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+  transition: "background-color 0.3s",
+  "&:hover": {
+    background: "#f0f0f0",
+  },
+});
+
 export default function ItemViewer() {
   const [images, setImages] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -112,6 +154,7 @@ export default function ItemViewer() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', containScroll: 'keepSnaps', dragFree: true, loop: true  });
   const progressRef = React.useRef<HTMLDivElement | null>(null);
+  const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
 
 
   const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
@@ -232,7 +275,11 @@ export default function ItemViewer() {
             <Track>
               {images.map((src, i) => (
                 <Slide key={src + i} aria-hidden={false}>
-                  <Image src={src} alt={`Dog Image ${i + 1}/${images.length}`} />
+                  <Image
+                    src={src}
+                    alt={`Dog Image ${i + 1}/${images.length}`}
+                    onClick={() => setLightboxSrc(src)}
+                  />
                 </Slide>
               ))}
             </Track>
@@ -261,6 +308,25 @@ export default function ItemViewer() {
                 : "0 / 0"}
             </Count>
           </ProgressContainer>
+          {lightboxSrc && (
+            <LightboxOverlay
+              role="dialog"
+              aria-modal="true"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setLightboxSrc(null);
+              }}
+            >
+              <LightboxInner>
+                <CloseButton
+                  aria-label="Close image"
+                  onClick={() => setLightboxSrc(null)}
+                >
+                  ×
+                </CloseButton>
+                <LightboxImage src={lightboxSrc} alt="Enlarged Dog Image" />
+              </LightboxInner>
+            </LightboxOverlay>
+          )}
         </>
       )}
     </Container>

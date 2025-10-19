@@ -105,8 +105,7 @@ const Count = styled("div")({
 
 const LightboxOverlay = styled("div")({
   position: "fixed",
-  width: "100%",
-  height: "100%",
+  inset: 0,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -155,6 +154,17 @@ export default function ItemViewer() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', containScroll: 'keepSnaps', dragFree: true, loop: true  });
   const progressRef = React.useRef<HTMLDivElement | null>(null);
   const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
+  const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
+  const lastActiveElementRef = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!lightboxSrc) return;
+    // save previously focused element
+    lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+    // focus the close button
+    setTimeout(() => closeButtonRef.current?.focus(), 0);
+    return;
+  }, [lightboxSrc]);
 
 
   const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
@@ -256,10 +266,6 @@ export default function ItemViewer() {
       cleanup();
     };
 
-    const onPointerCancel = (e: PointerEvent) => {
-      cleanup();
-    };
-
     function cleanup() {
       setIsDragging(false);
       setDragIndex(null);
@@ -272,16 +278,6 @@ export default function ItemViewer() {
       window.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("blur", onBlur);
     }
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        cleanup();
-      }
-    };
-
-    const onBlur = () => {
-      cleanup();
-    };
 
     const onVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -329,7 +325,13 @@ export default function ItemViewer() {
                   <Image
                     src={src}
                     alt={`Dog Image ${i + 1}/${images.length}`}
+                    tabIndex={0}
                     onClick={() => setLightboxSrc(src)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setLightboxSrc(src);
+                      }
+                    }}
                   />
                 </Slide>
               ))}
@@ -361,14 +363,32 @@ export default function ItemViewer() {
           </ProgressContainer>
           {lightboxSrc && (
             <LightboxOverlay
+              id="lightbox-overlay"
               role="dialog"
               aria-modal="true"
               onClick={(e) => {
-                if (e.target === e.currentTarget) setLightboxSrc(null);
+                if (e.target === e.currentTarget) {
+                  setLightboxSrc(null);
+                  // restore focus
+                  lastActiveElementRef.current?.focus();
+                }
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setLightboxSrc(null);
+                  lastActiveElementRef.current?.focus();
+                }
+                if (e.key === "Tab") {
+                  // trap focus to the close button (simple trap)
+                  e.preventDefault();
+                  closeButtonRef.current?.focus();
+                }
+              }}
+              tabIndex={-1}
             >
               <LightboxInner>
                 <CloseButton
+                  ref={closeButtonRef}
                   aria-label="Close image"
                   onClick={() => setLightboxSrc(null)}
                 >

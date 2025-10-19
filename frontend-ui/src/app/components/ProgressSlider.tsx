@@ -47,6 +47,7 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
   const [isDragging, setIsDragging] = React.useState(false);
   const [dragPercentage, setDragPercentage] = React.useState(0);
   const [dragIndex, setDragIndex] = React.useState<number | null>(null);
+  const cleanupRef = React.useRef<(() => void) | null>(null);
 
   const computePosition = (clientX: number) => {
     if (!ref.current) return 0;
@@ -81,11 +82,6 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
     }
   };
 
-  const onClick = (e: React.MouseEvent) => {
-    const percentage = computePosition((e as any).clientX);
-    commitToIndex(mapToIndex(percentage));
-  };
-
   const startPointer = (e: React.PointerEvent) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
     setIsDragging(true);
@@ -115,6 +111,7 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
       window.removeEventListener("pointercancel", onPointerCancel);
       window.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("blur", onBlur);
+      cleanupRef.current = null;
     }
 
     const onVisibility = () => {
@@ -128,16 +125,14 @@ export default function ProgressSlider({ emblaApi, imagesLength, selectedIndex }
     window.addEventListener("pointercancel", onPointerCancel);
     window.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("blur", onBlur);
+    // store cleanup for unmount safety
+    cleanupRef.current = cleanup;
   };
 
   React.useEffect(() => {
     return () => {
-      // ensure any listeners removed on unmount
-      window.removeEventListener("pointermove", null as any);
-      window.removeEventListener("pointerup", null as any);
-      window.removeEventListener("pointercancel", null as any);
-      window.removeEventListener("visibilitychange", null as any);
-      window.removeEventListener("blur", null as any);
+      // if a drag is in progress at unmount, call the stored cleanup to remove listeners
+      cleanupRef.current?.();
     };
   }, []);
 

@@ -35,7 +35,7 @@ const Image = styled("img")({
 });
 
 type Props = {
-  emblaRef: any;
+  emblaRef: React.RefCallback<HTMLDivElement>;
   images: string[];
   onImageClick: (src: string) => void;
 };

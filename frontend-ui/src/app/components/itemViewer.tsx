@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/system';
+import { styled } from "@mui/system";
+import useEmblaCarousel from "embla-carousel-react";
 
 const Container = styled("div")({
   display: "flex",
@@ -14,25 +15,50 @@ const Container = styled("div")({
 const Title = styled("h1")({
   color: "white",
   fontSize: "2rem",
-  fontWeight: "700",
+  fontWeight: 700,
   textDecoration: "underline",
   marginBottom: "1rem",
 });
 
 const Image = styled("img")({
-  maxWidth: "100%",
-  height: "auto",
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  display: "block",
 });
 
 const State = styled("div")({
   marginTop: "1rem",
 });
 
+const Viewport = styled("div")({
+  overflow: "hidden",
+  width: "100%",
+  maxWidth: "60rem",
+  borderRadius: 12,
+  background: "#f3f3f3",
+  maxHeight: "35rem",
+});
+
+const Track = styled("div")({
+  display: "flex",
+  height: "100%",
+});
+
+const Slide = styled("div")({
+  minWidth: "100%",
+  flex: "0 0 100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100%",
+});
+
 export default function ItemViewer() {
   const [images, setImages] = useState<string[]>([]);
-  const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [emblaRef] = useEmblaCarousel();
 
   useEffect(() => {
     async function fetchImages() {
@@ -44,7 +70,6 @@ export default function ItemViewer() {
         const body = await result.json();
         const arr = Array.isArray(body?.message) ? body.message : [];
         setImages(arr);
-        setIndex(0);
       } catch (err: unknown) {
         console.error(err);
         setError(true);
@@ -56,20 +81,22 @@ export default function ItemViewer() {
 
     fetchImages();
   }, []);
-  const current = images[index];
 
   return (
     <Container>
-        <Title>Dog Images</Title>
-        {loading && <State>Loading...</State>}
-        {error && <State>Error: Something went wrong</State>}
-        {!loading && !error && images.length === 0 && <State>No images available</State>}
-        {current && (
-          <Image
-            src={current}
-            alt={`Whippet dog image ${index + 1} of ${images.length}`}
-          />
-        )}
+      <Title>Very Cool Dog Images 🐕</Title>
+      {loading && <State>Loading images…</State>}
+      {error && <State>Error: Something went wrong</State>}
+      {!loading && !error && images.length === 0 && <State>No images available</State>}
+      <Viewport ref={emblaRef}>
+        <Track>
+          {images.map((src, i) => (
+            <Slide key={src + i} aria-hidden={false}>
+              <Image src={src} alt={`Dog Image ${i + 1}/${images.length}`}/>
+            </Slide>
+          ))}
+        </Track>
+      </Viewport>
     </Container>
   );
 }

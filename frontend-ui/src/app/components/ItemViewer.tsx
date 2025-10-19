@@ -4,6 +4,7 @@ import React from "react";
 import { styled } from "@mui/system";
 import useEmblaCarousel from "embla-carousel-react";
 import Lightbox from "./Lightbox";
+import ViewportCarousel from "./ViewportCarousel";
 
 const Container = styled("div")({
   display: "flex",
@@ -21,40 +22,11 @@ const Title = styled("h1")({
   marginBottom: "1rem",
 });
 
-const Image = styled("img")({
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  display: "block",
-  cursor: "pointer",
-  borderRadius: 12,
-});
 
 const State = styled("div")({
   marginTop: "1rem",
 });
 
-const Viewport = styled("div")({
-  overflow: "hidden",
-  width: "100%",
-  maxWidth: "70rem",
-  borderRadius: 12,
-  maxHeight: "35rem",
-});
-
-const Track = styled("div")({
-  display: "flex",
-  height: "100%",
-});
-
-const Slide = styled("div")({
-  flex: "0 0 80%",
-  marginRight: "1rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-});
 
 const ButtonContainer = styled("div")({
   marginTop: "1rem",
@@ -267,25 +239,7 @@ export default function ItemViewer() {
       {!loading && !error && images.length === 0 && <State>No images available</State>}
       {!loading && !error && images.length > 0 && (
         <>
-          <Viewport ref={emblaRef}>
-            <Track>
-              {images.map((src, i) => (
-                <Slide key={src + i} aria-hidden={false}>
-                  <Image
-                    src={src}
-                    alt={`Dog Image ${i + 1}/${images.length}`}
-                    tabIndex={0}
-                    onClick={() => setLightboxSrc(src)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        setLightboxSrc(src);
-                      }
-                    }}
-                  />
-                </Slide>
-              ))}
-            </Track>
-          </Viewport>
+          <ViewportCarousel emblaRef={emblaRef} images={images} onImageClick={(src) => setLightboxSrc(src)} />
 
           <ButtonContainer>
             <Button onClick={scrollPrev}>Previous</Button>
